@@ -3,7 +3,6 @@ package com.example.okta.servicewrapper.header;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 
-import static com.example.okta.servicewrapper.constant.AdapterConstant.API_KEY;
 import static com.example.okta.servicewrapper.constant.AdapterConstant.HEADER_AUTHORIZATION;
 
 public class BearerAuthUserInterceptor implements RequestInterceptor {

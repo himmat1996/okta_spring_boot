@@ -5,35 +5,35 @@ import com.okta.jwt.AccessTokenVerifier;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
 import com.okta.jwt.JwtVerifiers;
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.application.ApplicationBuilder;
+import com.okta.sdk.resource.application.AppUser;
+import com.okta.sdk.resource.application.AppUserList;
 import com.okta.sdk.resource.application.ApplicationList;
-import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupBuilder;
-import com.okta.sdk.resource.group.GroupList;
-import com.okta.sdk.resource.user.UserBuilder;
-import com.okta.sdk.resource.user.UserList;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-
 @RestController
+@RequestMapping("/applications")
 public class ApplicationsController {
 
 
-    @GetMapping("/applications")
+    @GetMapping
     public ApplicationList getApplications() {
         Client clientBuilder = CommonUtils.getClientBuilder();
-        ApplicationBuilder.instance().setName("Himmat")
-                .buildAndCreate(clientBuilder);
         return clientBuilder.listApplications();
+    }
+    @GetMapping("/{applicationId}")
+    public AppUserList getUsersByAppId(@PathVariable("applicationId") String applicationId) {
+        Client clientBuilder = CommonUtils.getClientBuilder();
+        return clientBuilder.getApplication(applicationId).listApplicationUsers();
+    }
+    @PostMapping("/users/{applicationId}")
+    public void assignUserToApplication(@PathVariable("applicationId") String applicationId, @RequestParam("userId") String userId) {
+        Client clientBuilder = CommonUtils.getClientBuilder();
+        AppUser appUser = clientBuilder.instantiate(AppUser.class);
+        appUser.setId(userId);
+        clientBuilder.getApplication(applicationId).assignUserToApplication(appUser);
     }
 
     @GetMapping("/verify")

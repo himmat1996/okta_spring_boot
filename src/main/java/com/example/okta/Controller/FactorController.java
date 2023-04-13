@@ -1,28 +1,46 @@
 package com.example.okta.Controller;
 
+import com.example.okta.request.FactorRequest;
 import com.example.okta.utils.CommonUtils;
 import com.okta.sdk.client.Client;
-import com.okta.sdk.resource.application.ApplicationList;
-import com.okta.sdk.resource.user.factor.UserFactorList;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.okta.sdk.resource.user.User;
+import com.okta.sdk.resource.user.factor.*;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/factors")
 public class FactorController {
 
-    @GetMapping
-    public ApplicationList getApplications() {
-        Client clientBuilder = CommonUtils.getClientBuilder();
-
-        return clientBuilder.listApplications();
-    }
-
     @GetMapping("/{userId}")
     public UserFactorList getUserFactorList(@PathVariable("userId") String userId) {
         Client clientBuilder = CommonUtils.getClientBuilder();
         return clientBuilder.getUser(userId).listFactors();
+    }
+
+    @PutMapping("/{userId}")
+    public UserFactorList updateFactor(@PathVariable("userId") String userId, @RequestBody FactorRequest factorRequest) {
+        Client clientBuilder = CommonUtils.getClientBuilder();
+        User user = clientBuilder.getUser(userId);
+        UserFactor userFactor = clientBuilder.instantiate(UserFactor.class);
+        userFactor.setFactorType(factorRequest.getFactorType());
+        userFactor.setProvider(FactorProvider.OKTA);
+        userFactor.setVerify(clientBuilder.instantiate(VerifyFactorRequest.class));
+        user.enrollFactor(userFactor);
+        user.update();
+        return clientBuilder.getUser(userId).listFactors();
+    }
+
+    @GetMapping("/{userId}/{factorId}")
+    public UserFactor getFactorById(@PathVariable("userId") String userId, @PathVariable("factorId") String factorId) {
+        Client clientBuilder = CommonUtils.getClientBuilder();
+        User user = clientBuilder.getUser(userId);
+        return user.getFactor(factorId);
+    }
+
+    @DeleteMapping("/{userId}/{factorId}")
+    public void deleteFactorById(@PathVariable("userId") String userId, @PathVariable("factorId") String factorId) {
+        Client clientBuilder = CommonUtils.getClientBuilder();
+        User user = clientBuilder.getUser(userId);
+        user.deleteFactor(factorId);
     }
 }

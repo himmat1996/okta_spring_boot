@@ -3,8 +3,6 @@ package com.example.okta.servicewrapper.header;
 import com.example.okta.utils.CommonUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 public class BasicAuthInterceptor implements RequestInterceptor {
     private String clientId;

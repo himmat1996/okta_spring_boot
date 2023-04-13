@@ -9,6 +9,7 @@ import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.group.GroupList;
+import com.okta.sdk.resource.group.rule.GroupRule;
 import com.okta.sdk.resource.group.rule.GroupRuleBuilder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,8 @@ public class GroupController {
     public void assignToGroup(@PathVariable(name = "groupId") String groupId,@RequestParam(name = "userId") String userId) {
         Client clientBuilder = CommonUtils.getClientBuilder();
 
-        GroupRuleBuilder.instance().setAssignUserToGroups(Collections.singletonList(userId)).buildAndCreate(clientBuilder);
+        GroupRule group=  GroupRuleBuilder.instance().setAssignUserToGroups(Collections.singletonList(userId)).buildAndCreate(clientBuilder);
+
 //
 //
 //        Group group = GroupBuilder.instance()
